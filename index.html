@@ -907,7 +907,7 @@ function buildImagePrompt(p) {
     'very dark brown',
   ];
 
-  const sex       = p.sex === 'female' ? 'girl' : 'boy';
+  const sex       = p.sex === 'female' ? 'female' : 'male';
   const skinTone  = SKIN_DESCS[p.skinIdx];
   const eyeColor  = EYE_DESCS[p.eyeIdx];
 
@@ -958,14 +958,14 @@ function buildImagePrompt(p) {
 
   // Assemble
   const lines = [
-    `Photorealistic portrait photograph of a ${sex} child, approximately 8–12 years old.`,
+    `Educational illustration for a high school genetics class project. Photorealistic portrait of a ${sex} person with the following inherited genetic traits.`,
     `Skin tone: ${skinTone}. Face shape: ${faceShape}.`,
     `Eyes: ${eyeParts}.`,
     `Hair: ${hairDesc}${wpNote}.`,
     `Eyebrows: ${browDesc}. ${noseDesc}, ${lipDesc}.`,
     extras ? `Additional features: ${extras}.` : '',
-    `The child is ${wave}, with a warm and friendly smile.`,
-    `Style: studio portrait, soft neutral background, warm natural lighting, sharp focus, highly detailed, photorealistic.`,
+    `The subject is ${wave}, with a warm and friendly smile.`,
+    `Style: clean studio portrait, soft neutral background, warm natural lighting, sharp focus, highly detailed, photorealistic. This image is for educational/academic use only.`,
   ].filter(Boolean).join(' ');
 
   return lines;
