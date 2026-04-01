@@ -146,6 +146,18 @@
   .pheno-item{padding:2px 4px;border-radius:3px}
   .pheno-item b{color:var(--accent2)}
 
+  .narrative{
+    width:100%;
+    background:var(--input-bg);border-radius:10px;
+    border:1.5px solid var(--border);
+    padding:14px 16px;
+  }
+  .narrative p{
+    font-size:.8em;line-height:1.8;color:var(--muted);margin:0;
+  }
+  .narrative p + p{margin-top:8px}
+  .hi{color:var(--accent2);font-weight:700}
+
   /* Sex toggle */
   .sex-toggle{display:flex;gap:6px;margin-bottom:10px}
   .sex-btn{
@@ -246,8 +258,8 @@
     </div>
 
     <div class="card">
-      <div class="card-head">📋 Trait Analysis</div>
-      <div class="trait-table" id="trait-table"></div>
+      <div class="card-head">👤 Child Description</div>
+      <div id="trait-table"></div>
     </div>
 
   </div><!-- end left-col -->
@@ -990,22 +1002,64 @@ function generateSVG(p) {
   return layers.join('\n');
 }
 
-// ─── PHENOTYPE SUMMARY ───────────────────────────
-function buildPhenoList(p) {
-  const items = [
-    ['Face',      p.roundFace?'Round':'Square'],
-    ['Hand',      p.rightHanded?'Right':'Left'],
-    ['Eyes',      p.eyeSize + (p.almondEye?' almond':' round')],
-    ['Eye dist',  p.eyeDist],
-    ['Nose',      p.noseSize],
-    ['Mouth',     p.mouthW],
-    ['Lips',      p.thickLips?'Thick':'Thin'],
-    ['Hair',      p.hairType],
-    ['Brows',     (p.bushyBrow?'Bushy':'Fine')+(p.browSeparate?'':' / Unibrow')],
-    ['Freckles',  p.freckles?'Yes':'No'],
-    ['Dimples',   p.dimples?'Yes':'No'],
-  ];
-  return items.map(([k,v])=>`<div class="pheno-item"><b>${k}:</b> ${v}</div>`).join('');
+// ─── PHENOTYPE NARRATIVE ─────────────────────────
+function hi(text) { return `<span class="hi">${text}</span>`; }
+
+function buildNarrative(p) {
+  const EYE_COLORS = ['light blue','blue','blue-green','hazel','medium brown','dark brown','very dark brown'];
+  const SKIN_TONES = ['very fair','fair','light','light-medium','medium tan','brown','dark brown','very dark brown','deep ebony'];
+  const eyeColor  = EYE_COLORS[Math.min(p.eyeIdx, 6)];
+  const skinDesc  = SKIN_TONES[Math.min(p.skinIdx, 8)];
+  const sex       = p.sex === 'female' ? 'she' : 'he';
+  const Sex       = sex[0].toUpperCase() + sex.slice(1);
+
+  // Sentence 1: overall face + skin
+  const faceShape = p.roundFace ? 'round' : 'square';
+  const chinNote  = p.cleftChin ? ', with a cleft chin' : p.prominentChin ? ', with a prominent chin' : '';
+  const s1 = `Your child has a ${hi(faceShape + ' face')} and ${hi(skinDesc + ' skin tone')}${chinNote}.`;
+
+  // Sentence 2: eyes
+  const eyeSize  = p.eyeSize;
+  const eyeShape = p.almondEye ? 'almond-shaped' : 'round';
+  const eyeDist  = p.eyeDist === 'close' ? 'close-set' : p.eyeDist === 'far' ? 'wide-set' : '';
+  const slant    = p.eyeUpward ? 'upward-slanting' : '';
+  const lashes   = p.longLash ? ' with long lashes' : '';
+  const eyeAdj   = [slant, eyeDist, eyeSize, eyeShape].filter(Boolean).join(', ');
+  const s2 = `${Sex} has ${hi(eyeAdj + ' ' + eyeColor + ' eyes')}${lashes}.`;
+
+  // Sentence 3: hair & brows
+  const hairColor = p.redHair ? 'red' : p.darkHair ? 'dark brown' : 'light blonde';
+  const wp        = p.widowsPeak ? " with a widow's peak" : '';
+  const browDesc  = p.bushyBrow ? 'bushy' : 'fine';
+  const browConn  = p.browSeparate ? '' : ' unibrow';
+  const s3 = `${Sex} has ${hi(p.hairType + ' ' + hairColor + ' hair')}${wp}, and ${hi(browDesc + browConn + ' eyebrows')}.`;
+
+  // Sentence 4: nose & mouth
+  const noseDesc = p.noseSize === 'big' ? 'a broad nose' : p.noseSize === 'small' ? 'a small, delicate nose' : 'an average-sized nose';
+  const bridge   = p.highBridge ? 'with a high, narrow bridge' : 'with a low, broad bridge';
+  const mouthW   = p.mouthW === 'wide' ? 'wide' : p.mouthW === 'narrow' ? 'narrow' : 'average-width';
+  const lips     = p.thickLips ? 'full lips' : 'thin lips';
+  const s4 = `${Sex} has ${hi(noseDesc)} ${bridge}, a ${hi(mouthW + ' mouth')}, and ${hi(lips)}.`;
+
+  // Sentence 5: notable extras
+  const extras = [];
+  if (p.freckles)    extras.push(hi('freckles'));
+  if (p.dimples)     extras.push(hi('cheek dimples'));
+  if (p.cleftChin)   extras.push(hi('a cleft chin'));
+  if (!p.freeEarlobe) extras.push('attached earlobes');
+  if (p.darwinTub)   extras.push("a Darwin's tubercle");
+  const handedness = hi((p.rightHanded ? 'right' : 'left') + '-handed');
+  const extraStr  = extras.length ? `Notable features include ${extras.join(', ')}. ` : '';
+  const s5 = `${extraStr}${Sex} waves with ${p.sex==='female'?'her':'his'} ${handedness} hand.`;
+
+  return `
+    <div class="narrative">
+      <p>${s1}</p>
+      <p>${s2}</p>
+      <p>${s3}</p>
+      <p>${s4}</p>
+      <p>${s5}</p>
+    </div>`;
 }
 
 // ═══════════════════════════════════════════════
@@ -1079,19 +1133,36 @@ function buildImagePrompt(p) {
     !p.freeEarlobe ? 'attached earlobes' : '',
   ].filter(Boolean).join(', ');
 
-  // Waving hand
-  const wave = `cheerfully waving with their ${p.rightHanded ? 'right' : 'left'} hand`;
+  // Random age-appropriate activity for an 18-year-old high schooler
+  const ACTIVITIES = [
+    'reading a book at a library table',
+    'studying with a notebook and pen',
+    'listening to music with headphones around their neck',
+    'holding a soccer ball under one arm',
+    'wearing a graduation cap and holding a diploma',
+    'sitting at a desk with a laptop open',
+    'holding a paintbrush in front of an easel',
+    'wearing a backpack and looking ready for school',
+    'holding a camera up to take a photo',
+    'playing an acoustic guitar',
+    'holding a basketball at their hip',
+    'sitting on a bench reading a paperback novel',
+    'sketching in a drawing pad',
+    'holding a science lab notebook',
+    'wearing a letterman jacket and smiling',
+  ];
+  const activity = ACTIVITIES[Math.floor(Math.random() * ACTIVITIES.length)];
 
   // Assemble
   const lines = [
-    `Educational illustration for a high school genetics class project. Photorealistic portrait of a ${sex} person with the following inherited genetic traits.`,
+    `Educational illustration for a high school genetics class project. Photorealistic portrait of an 18-year-old ${sex} person with the following inherited genetic traits.`,
     `Skin tone: ${skinTone}. Face shape: ${faceShape}.`,
     `Eyes: ${eyeParts}.`,
     `Hair: ${hairDesc}${wpNote}.`,
     `Eyebrows: ${browDesc}. ${noseDesc}, ${lipDesc}.`,
     extras ? `Additional features: ${extras}.` : '',
-    `The subject is ${wave}, with a warm and friendly smile.`,
-    `Style: clean studio portrait, soft neutral background, warm natural lighting, sharp focus, highly detailed, photorealistic. This image is for educational/academic use only.`,
+    `The subject is ${activity}, with a warm and friendly expression.`,
+    `Style: clean portrait, soft neutral background, warm natural lighting, sharp focus, highly detailed, photorealistic. This image is for educational/academic use only.`,
   ].filter(Boolean).join(' ');
 
   return lines;
@@ -1178,8 +1249,22 @@ function updateTraitTable() {
 function updateFace() {
   const p = parsePhenotypes();
   document.getElementById('face-svg').innerHTML = generateSVG(p);
-  document.getElementById('pheno-list').innerHTML = buildPhenoList(p);
-  updateTraitTable();
+  // Narrative in the left-column description card
+  document.getElementById('trait-table').innerHTML = buildNarrative(p);
+  // Compact key-value grid under the portrait
+  document.getElementById('pheno-list').innerHTML = buildCompactSummary(p);
+}
+
+function buildCompactSummary(p) {
+  const items = [
+    ['Face',    p.roundFace?'Round':'Square'],
+    ['Hair',    p.hairType + (p.redHair?' · red': p.darkHair?' · dark':' · light')],
+    ['Eyes',    p.eyeSize + ' · ' + (p.almondEye?'almond':'round')],
+    ['Skin',    ['very fair','fair','light','lt-med','tan','brown','dk brown','v. dark','ebony'][Math.min(p.skinIdx,8)]],
+    ['Brows',   p.bushyBrow?'Bushy':'Fine'],
+    ['Hand',    p.rightHanded?'Right':'Left'],
+  ];
+  return items.map(([k,v])=>`<div class="pheno-item"><b>${k}:</b> ${v}</div>`).join('');
 }
 
 // ═══════════════════════════════════════════════
