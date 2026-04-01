@@ -63,49 +63,67 @@
     padding-bottom:8px;border-bottom:2px solid var(--border);
   }
 
-  /* Single-gene trait grid */
-  .traits-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
-    gap:6px;
-  }
-  .trait-row{
-    display:flex;align-items:center;gap:6px;
-    padding:4px 6px;border-radius:8px;
-    background:var(--input-bg);
-    border:1.5px solid var(--border);
+  /* Sequence input */
+  .seq-label{font-size:.72em;color:var(--muted);display:block;margin-bottom:6px;line-height:1.4}
+  .seq-row{display:flex;gap:6px;align-items:center}
+  .seq-input{
+    width:100%;padding:10px 14px;
+    font-family:'JetBrains Mono',monospace;font-size:.83em;letter-spacing:.4px;
+    border:1.5px solid var(--border);border-radius:10px;
+    background:#fff;color:var(--text);outline:none;
     transition:border-color .15s;
   }
-  .trait-row:hover{border-color:#a5f3fc}
-  .gene-tag{
-    font-family:'JetBrains Mono',monospace;
-    font-size:.78em;font-weight:600;
-    color:var(--accent2);
-    min-width:18px;text-align:center;
+  .seq-input:focus{border-color:var(--accent)}
+  .dice-btn{
+    flex-shrink:0;width:38px;height:38px;border-radius:10px;
+    border:1.5px solid var(--border);background:var(--input-bg);
+    font-size:1.2em;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all .15s;
   }
-  .trait-label{
-    flex:1;font-size:.72em;color:var(--muted);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  }
+  .dice-btn:hover{background:var(--accent);border-color:var(--accent);transform:rotate(-15deg) scale(1.1)}
+  .seq-sub{font-size:.65em;color:var(--muted);margin-top:5px;line-height:1.5}
+  .seq-sub span{font-family:'JetBrains Mono',monospace;background:var(--input-bg);padding:1px 4px;border-radius:4px;border:1px solid var(--border)}
+
+  /* Polygenic mini row */
+  .poly-mini{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .poly-mini-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .poly-mini-label{font-size:.68em;font-weight:700;color:var(--muted)}
+  .poly-mini-item{display:flex;align-items:center;gap:3px}
+  .poly-mini-gene{font-family:'JetBrains Mono',monospace;font-size:.65em;font-weight:700;color:var(--accent2)}
   .geno-in{
-    width:44px;padding:3px 4px;
+    width:38px;padding:3px 4px;
     border:1.5px solid var(--border);border-radius:6px;
-    font-family:'JetBrains Mono',monospace;font-size:.82em;
+    font-family:'JetBrains Mono',monospace;font-size:.8em;
     text-align:center;background:#fff;color:var(--text);
-    transition:border-color .15s,background .15s;
+    transition:border-color .15s;
   }
   .geno-in:focus{outline:none;border-color:var(--accent);background:#f0fdf4}
-  .geno-in.ok{border-color:#22c55e}
-  .geno-in.bad{border-color:#ef4444;background:#fff1f2}
 
-  /* Polygenic section */
-  .poly-row{display:flex;gap:20px;flex-wrap:wrap}
-  .poly-group{flex:1;min-width:180px}
-  .poly-label{font-size:.78em;font-weight:700;color:var(--muted);margin-bottom:8px}
-  .poly-inputs{display:flex;gap:8px;flex-wrap:wrap}
-  .poly-item{display:flex;flex-direction:column;align-items:center;gap:3px}
-  .poly-gene{font-family:'JetBrains Mono',monospace;font-size:.7em;font-weight:600;color:var(--accent2)}
-  .poly-hint{font-size:.6em;color:#a0aec0}
+  /* Trait analysis table */
+  .trait-table{max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;padding-right:2px}
+  .trait-table::-webkit-scrollbar{width:4px}
+  .trait-table::-webkit-scrollbar-track{background:var(--input-bg);border-radius:2px}
+  .trait-table::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+  .t-row{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 10px;border-radius:8px;
+    background:var(--input-bg);border:1.5px solid var(--border);
+    transition:border-color .15s,background .15s;
+  }
+  .t-row.t-live{border-color:#a5f3fc;background:#f0fdff}
+  .t-badge{
+    width:24px;height:24px;border-radius:50%;flex-shrink:0;
+    background:var(--accent2);color:#fff;
+    font-family:'JetBrains Mono',monospace;font-size:.72em;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .t-info{flex:1;min-width:0}
+  .t-name{font-size:.78em;font-weight:700;color:var(--text)}
+  .t-hint{font-size:.6em;color:var(--muted);margin-top:1px}
+  .t-result{text-align:right;flex-shrink:0;min-width:70px}
+  .t-geno{font-family:'JetBrains Mono',monospace;font-size:.82em;font-weight:700;color:var(--accent2);display:block}
+  .t-geno.t-empty{color:#cbd5e1}
+  .t-pheno{font-size:.65em;color:var(--muted);display:block;margin-top:1px}
 
   /* Face panel */
   .face-panel{
@@ -199,56 +217,37 @@
   <div class="left-col">
 
     <div class="card">
-      <div class="card-head">📋 Single Gene Traits (A–Z)</div>
-      <div class="traits-grid" id="single-grid"></div>
+      <div class="card-head">🧬 Genetic Sequence (A–Z)</div>
+      <label class="seq-label">Enter genotypes in order A → Z, separated by spaces:</label>
+      <div class="seq-row">
+        <input type="text" id="seq-input" class="seq-input" autocomplete="off" spellcheck="false"
+          placeholder="Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz">
+        <button class="dice-btn" onclick="randomize()" title="Random genotype">🎲</button>
+      </div>
+      <div class="seq-sub">
+        <span>Uppercase = dominant</span> · <span>lowercase = recessive</span> · leave blank = defaults to heterozygous
+      </div>
+      <!-- Polygenic genes stay as compact inline inputs -->
+      <div class="poly-mini">
+        <div class="poly-mini-group">
+          <span class="poly-mini-label">👁 Eye color:</span>
+          <div class="poly-mini-item"><span class="poly-mini-gene">A</span><input class="geno-in" id="pA" placeholder="Aa" maxlength="2"></div>
+          <div class="poly-mini-item"><span class="poly-mini-gene">B</span><input class="geno-in" id="pB" placeholder="Bb" maxlength="2"></div>
+          <div class="poly-mini-item"><span class="poly-mini-gene">C</span><input class="geno-in" id="pC" placeholder="Cc" maxlength="2"></div>
+        </div>
+        <div class="poly-mini-group">
+          <span class="poly-mini-label">🎨 Skin color:</span>
+          <div class="poly-mini-item"><span class="poly-mini-gene">D</span><input class="geno-in" id="pD" placeholder="Dd" maxlength="2"></div>
+          <div class="poly-mini-item"><span class="poly-mini-gene">E</span><input class="geno-in" id="pE" placeholder="Ee" maxlength="2"></div>
+          <div class="poly-mini-item"><span class="poly-mini-gene">F</span><input class="geno-in" id="pF" placeholder="Ff" maxlength="2"></div>
+          <div class="poly-mini-item"><span class="poly-mini-gene">G</span><input class="geno-in" id="pG" placeholder="Gg" maxlength="2"></div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <div class="card-head">🔬 Polygenic Traits</div>
-      <div class="poly-row">
-        <div class="poly-group">
-          <div class="poly-label">👁 Eye Color — Genes A, B, C (0 dom = Light Blue → 6 = Dark Brown)</div>
-          <div class="poly-inputs">
-            <div class="poly-item">
-              <span class="poly-gene">A</span>
-              <input class="geno-in" id="pA" placeholder="Aa" maxlength="2" title="AA=2 dominant, Aa=1, aa=0">
-              <span class="poly-hint">e.g. AA</span>
-            </div>
-            <div class="poly-item">
-              <span class="poly-gene">B</span>
-              <input class="geno-in" id="pB" placeholder="Bb" maxlength="2">
-            </div>
-            <div class="poly-item">
-              <span class="poly-gene">C</span>
-              <input class="geno-in" id="pC" placeholder="Cc" maxlength="2">
-            </div>
-          </div>
-        </div>
-        <div class="poly-group">
-          <div class="poly-label">🎨 Skin Color — Genes D, E, F, G (0 dom = Melon → 8 = Ebony)</div>
-          <div class="poly-inputs">
-            <div class="poly-item">
-              <span class="poly-gene">D</span>
-              <input class="geno-in" id="pD" placeholder="Dd" maxlength="2">
-            </div>
-            <div class="poly-item">
-              <span class="poly-gene">E</span>
-              <input class="geno-in" id="pE" placeholder="Ee" maxlength="2">
-            </div>
-            <div class="poly-item">
-              <span class="poly-gene">F</span>
-              <input class="geno-in" id="pF" placeholder="Ff" maxlength="2">
-            </div>
-            <div class="poly-item">
-              <span class="poly-gene">G</span>
-              <input class="geno-in" id="pG" placeholder="Gg" maxlength="2">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="hint-bar" style="margin-top:10px">
-        ℹ️ Uppercase = dominant allele · Lowercase = recessive allele · Leave blank = defaults to heterozygous
-      </div>
+      <div class="card-head">📋 Trait Analysis</div>
+      <div class="trait-table" id="trait-table"></div>
     </div>
 
   </div><!-- end left-col -->
@@ -302,54 +301,72 @@ function setSex(s) {
 //  TRAIT DEFINITIONS
 // ═══════════════════════════════════════════════
 const TRAITS = [
-  {id:'A', name:'Handedness',       hint:'AA/Aa=Right-handed (waves right), aa=Left-handed (waves left)'},
-  {id:'B', name:'Face Shape',       hint:'BB/Bb=Round, bb=Square'},
-  {id:'C', name:'Eyebrow Bushy',    hint:'CC/Cc=Bushy, cc=Fine'},
-  {id:'D', name:'Eyebrow Connect',  hint:'DD/Dd=Separate, dd=Unibrow'},
-  {id:'E', name:'Eye Distance',     hint:'EE=Close, Ee=Average, ee=Far Apart'},
-  {id:'F', name:'Eye Size',         hint:'FF=Large, Ff=Medium, ff=Small'},
-  {id:'G', name:'Eye Shape',        hint:'GG/Gg=Almond, gg=Round'},
-  {id:'H', name:'Eye Slant',        hint:'HH/Hh=Horizontal, hh=Upward'},
-  {id:'I', name:'Eyelash Length',   hint:'II/Ii=Long, ii=Short'},
-  {id:'J', name:'Nose Size',        hint:'JJ=Big, Jj=Average, jj=Small'},
-  {id:'K', name:'Nose Bridge',      hint:'KK/Kk=High Narrow, kk=Low Broad'},
-  {id:'L', name:'Mouth Width',      hint:'LL=Wide, Ll=Average, ll=Narrow'},
-  {id:'M', name:'Lip Thickness',    hint:'MM/Mm=Thick, mm=Thin'},
-  {id:'N', name:'Lip Protrusion',   hint:'NN=Very, Nn=Slight, nn=Absent'},
-  {id:'O', name:'Chin Shape',       hint:'OO/Oo=Round, oo=Square'},
-  {id:'P', name:'Chin Size',        hint:'PP/Pp=Prominent, pp=Less Prominent'},
-  {id:'Q', name:'Cleft Chin',       hint:'QQ/Qq=Absent, qq=Present'},
-  {id:'R', name:'Darwin Tubercle',  hint:'RR/Rr=Present on ear, rr=Absent'},
-  {id:'S', name:'Earlobe',          hint:'SS/Ss=Free hanging, ss=Attached'},
-  {id:'T', name:'Freckles',         hint:'TT/Tt=Present, tt=Absent'},
-  {id:'U', name:'Cheek Dimples',    hint:'UU/Uu=Present, uu=Absent'},
-  {id:'V', name:"Widow's Peak",     hint:"VV/Vv=Present, vv=Absent"},
-  {id:'W', name:'Hair Type',        hint:'WW=Curly, Ww=Wavy, ww=Straight'},
-  {id:'X', name:'Red Hair',         hint:'XX/Xx=Not Red, xx=Red'},
-  {id:'Y', name:'Hair Color',       hint:'YY/Yy=Dark, yy=Light'},
-  {id:'Z', name:'Eyebrow Color',    hint:'ZZ=Darker than hair, Zz=Same, zz=Lighter'},
+  {id:'A', name:'Handedness',      hint:'AA/Aa = Right-handed · aa = Left-handed',          label: v => hasDom(v)?'Right-handed':'Left-handed'},
+  {id:'B', name:'Face Shape',      hint:'BB/Bb = Round · bb = Square',                       label: v => hasDom(v)?'Round':'Square'},
+  {id:'C', name:'Eyebrow Bushy',   hint:'CC/Cc = Bushy · cc = Fine',                         label: v => hasDom(v)?'Bushy':'Fine'},
+  {id:'D', name:'Eyebrow Connect', hint:'DD/Dd = Separate · dd = Unibrow',                   label: v => hasDom(v)?'Separate':'Unibrow'},
+  {id:'E', name:'Eye Distance',    hint:'EE = Close · Ee = Average · ee = Far apart',        label: v => {const d=dom(v);return d===2?'Close-set':d===0?'Far-set':'Average'}},
+  {id:'F', name:'Eye Size',        hint:'FF = Large · Ff = Medium · ff = Small',             label: v => {const d=dom(v);return d===2?'Large':d===0?'Small':'Medium'}},
+  {id:'G', name:'Eye Shape',       hint:'GG/Gg = Almond · gg = Round',                      label: v => hasDom(v)?'Almond':'Round'},
+  {id:'H', name:'Eye Slant',       hint:'HH/Hh = Horizontal · hh = Upward slant',           label: v => hasDom(v)?'Horizontal':'Upward slant'},
+  {id:'I', name:'Eyelash Length',  hint:'II/Ii = Long · ii = Short',                        label: v => hasDom(v)?'Long':'Short'},
+  {id:'J', name:'Nose Size',       hint:'JJ = Big · Jj = Average · jj = Small',             label: v => {const d=dom(v);return d===2?'Big':d===0?'Small':'Average'}},
+  {id:'K', name:'Nose Bridge',     hint:'KK/Kk = High & narrow · kk = Low & broad',         label: v => hasDom(v)?'High & narrow':'Low & broad'},
+  {id:'L', name:'Mouth Width',     hint:'LL = Wide · Ll = Average · ll = Narrow',           label: v => {const d=dom(v);return d===2?'Wide':d===0?'Narrow':'Average'}},
+  {id:'M', name:'Lip Thickness',   hint:'MM/Mm = Thick · mm = Thin',                        label: v => hasDom(v)?'Thick':'Thin'},
+  {id:'N', name:'Lip Protrusion',  hint:'NN = Very · Nn = Slight · nn = Absent',            label: v => {const d=dom(v);return d===2?'Very':d===0?'Absent':'Slight'}},
+  {id:'O', name:'Chin Shape',      hint:'OO/Oo = Round · oo = Square',                      label: v => hasDom(v)?'Round':'Square'},
+  {id:'P', name:'Chin Size',       hint:'PP/Pp = Prominent · pp = Less prominent',          label: v => hasDom(v)?'Prominent':'Less prominent'},
+  {id:'Q', name:'Cleft Chin',      hint:'QQ/Qq = Absent · qq = Present (recessive)',        label: v => dom(v)===0?'Present':'Absent'},
+  {id:'R', name:'Darwin Tubercle', hint:'RR/Rr = Present on ear · rr = Absent',             label: v => hasDom(v)?'Present':'Absent'},
+  {id:'S', name:'Earlobe',         hint:'SS/Ss = Free hanging · ss = Attached',             label: v => hasDom(v)?'Free hanging':'Attached'},
+  {id:'T', name:'Freckles',        hint:'TT/Tt = Present · tt = Absent',                   label: v => hasDom(v)?'Present':'Absent'},
+  {id:'U', name:'Cheek Dimples',   hint:'UU/Uu = Present · uu = Absent',                   label: v => hasDom(v)?'Present':'Absent'},
+  {id:'V', name:"Widow's Peak",    hint:'VV/Vv = Present · vv = Absent',                   label: v => hasDom(v)?'Present':'Absent'},
+  {id:'W', name:'Hair Type',       hint:'WW = Curly · Ww = Wavy · ww = Straight',          label: v => {const d=dom(v);return d===2?'Curly':d===0?'Straight':'Wavy'}},
+  {id:'X', name:'Red Hair',        hint:'XX/Xx = Not red · xx = Red (recessive)',           label: v => dom(v)===0?'Red':'Not red'},
+  {id:'Y', name:'Hair Color',      hint:'YY/Yy = Dark · yy = Light (blonde)',              label: v => hasDom(v)?'Dark':'Light (blonde)'},
+  {id:'Z', name:'Eyebrow Color',   hint:'ZZ = Darker than hair · Zz = Same · zz = Lighter',label: v => {const d=dom(v);return d===2?'Darker than hair':d===0?'Lighter than hair':'Same as hair'}},
 ];
 
 // ═══════════════════════════════════════════════
 //  BUILD UI
 // ═══════════════════════════════════════════════
 function buildUI() {
-  const grid = document.getElementById('single-grid');
+  const table = document.getElementById('trait-table');
   TRAITS.forEach(t => {
-    const div = document.createElement('div');
-    div.className = 'trait-row';
-    div.title = t.hint;
-    div.innerHTML = `
-      <span class="gene-tag">${t.id}</span>
-      <span class="trait-label">${t.name}</span>
-      <input class="geno-in" id="t_${t.id}" placeholder="${t.id.toLowerCase()}${t.id.toLowerCase()}" maxlength="2">
-    `;
-    grid.appendChild(div);
+    const row = document.createElement('div');
+    row.className = 't-row';
+    row.id = `row_${t.id}`;
+    row.innerHTML = `
+      <div class="t-badge">${t.id}</div>
+      <div class="t-info">
+        <div class="t-name">${t.name}</div>
+        <div class="t-hint">${t.hint}</div>
+      </div>
+      <div class="t-result">
+        <span class="t-geno t-empty" id="tg_${t.id}">—</span>
+        <span class="t-pheno" id="tp_${t.id}"></span>
+      </div>`;
+    table.appendChild(row);
   });
 
+  // Sequence input
+  document.getElementById('seq-input').addEventListener('input', updateFace);
+
+  // Polygenic inputs
   document.querySelectorAll('.geno-in').forEach(el => {
     el.addEventListener('input', () => { el.value = el.value.trim(); updateFace(); });
   });
+}
+
+// Parse the sequence input into individual genotype tokens
+function parseSequence() {
+  const raw = (document.getElementById('seq-input')||{}).value || '';
+  const tokens = raw.trim().split(/\s+/).filter(Boolean);
+  const g = {};
+  TRAITS.forEach((t, i) => { g[t.id] = tokens[i] || ''; });
+  return g;
 }
 
 // ═══════════════════════════════════════════════
@@ -382,8 +399,7 @@ function mix(h1,h2,t){
 function getVal(id){ return (document.getElementById(id)||{}).value||''; }
 
 function parsePhenotypes() {
-  const g = {};
-  TRAITS.forEach(t => { g[t.id] = getVal(`t_${t.id}`); });
+  const g = parseSequence();
   const pA=getVal('pA'), pB=getVal('pB'), pC=getVal('pC');
   const pD=getVal('pD'), pE=getVal('pE'), pF=getVal('pF'), pGG=getVal('pG');
 
@@ -470,70 +486,119 @@ function drawHair(p) {
   const female = p.sex === 'female';
 
   if (p.hairType === 'curly') {
-    // Single closed blob with bumpy perimeter — sits behind face
-    // bL = how far down the sides/bottom of the hair blob extends
-    const bL = female ? 295 : 278;
-    const d = `
-      M 80,${bL}
-      Q 50,${bL-26} 56,${bL-60}
-      Q 40,${bL-92} 58,${bL-122}
-      Q 42,${bL-152} 64,${bL-170}
-      Q 56,${bL-200} 78,90
-      Q 96,70 116,76
-      Q 133,60 150,68
-      Q 167,60 184,76
-      Q 204,70 222,90
-      Q 244,${bL-200} 236,${bL-170}
-      Q 258,${bL-152} 236,${bL-122}
-      Q 260,${bL-92} 244,${bL-60}
-      Q 250,${bL-26} 220,${bL}
-      Q 185,${bL+14} 150,${bL+11}
-      Q 115,${bL+14} 80,${bL}
-      Z`;
-    return `<path d="${d}" fill="${hc}"/>`;
+    // Circle-cluster approach (ported from reference).
+    // Scale: original 400×400 → our 300×360, face center 200,220 → 150,177
+    // Formula: x_new = x*0.75,  y_new = y*0.75 + 12
+    // Boy  = top clusters only (short)
+    // Girl = top clusters + side columns down to shoulders
+    const topCircles = `
+      <circle cx="112" cy="72"  r="34"/>
+      <circle cx="150" cy="62"  r="41"/>
+      <circle cx="188" cy="72"  r="34"/>
+      <circle cx="82"  cy="102" r="37"/>
+      <circle cx="218" cy="102" r="37"/>
+      <circle cx="67"  cy="140" r="30"/>
+      <circle cx="233" cy="140" r="30"/>`;
+
+    // Female: extra side curls cascading to shoulder level (~y 310)
+    const shoulderCircles = female ? `
+      <circle cx="52"  cy="178" r="28"/>
+      <circle cx="248" cy="178" r="28"/>
+      <circle cx="46"  cy="218" r="27"/>
+      <circle cx="254" cy="218" r="27"/>
+      <circle cx="48"  cy="258" r="26"/>
+      <circle cx="252" cy="258" r="26"/>
+      <circle cx="54"  cy="296" r="24"/>
+      <circle cx="246" cy="296" r="24"/>` : '';
+
+    return `<g fill="${hc}">${topCircles}${shoulderCircles}</g>`;
 
   } else if (p.hairType === 'wavy') {
-    // Silhouette with smooth S-curve sides (C bezier waves)
-    const hLen = female ? 324 : 278;
-    // Left side goes up with 2 gentle S-waves, then top arch, then right side mirrors
-    const d = `
-      M 80,${hLen}
-      C 54,${hLen-22} 84,${hLen-68} 70,${hLen-114}
-      C 54,${hLen-156} 84,${hLen-192} 74,${hLen-222}
-      Q 85,90 82,84
-      Q 116,62 150,68
-      Q 184,62 218,84
-      Q 215,90 226,${hLen-222}
-      C 216,${hLen-192} 246,${hLen-156} 230,${hLen-114}
-      C 216,${hLen-68} 246,${hLen-22} 220,${hLen}
-      Q 185,${hLen+14} 150,${hLen+11}
-      Q 115,${hLen+14} 80,${hLen}
-      Z`;
-    return `<path d="${d}" fill="${hc}"/>`;
+    // Gentle wave bumps on sides — no outward spikes
+    if (female) {
+      // Female: shoulder-length wavy
+      const d = `
+        M 78,322
+        Q 62,298 68,268
+        Q 56,238 68,206
+        Q 56,172 70,140
+        Q 60,110 74,94
+        Q 84,84 82,84
+        Q 116,62 150,68
+        Q 184,62 218,84
+        Q 216,84 226,94
+        Q 240,110 230,140
+        Q 244,172 232,206
+        Q 244,238 232,268
+        Q 238,298 222,322
+        Q 185,336 150,333
+        Q 115,336 78,322 Z`;
+      return `<path d="${d}" fill="${hc}"/>`;
+    } else {
+      // Male: short wavy — stays close to head, stops just below ears
+      const d = `
+        M 82,244
+        Q 66,220 72,194
+        Q 60,164 74,138
+        Q 64,112 80,90
+        Q 116,62 150,68
+        Q 184,62 220,90
+        Q 236,112 226,138
+        Q 240,164 228,194
+        Q 234,220 218,244
+        Q 185,256 150,253
+        Q 115,256 82,244 Z`;
+      return `<path d="${d}" fill="${hc}"/>`;
+    }
 
   } else {
-    // Straight: clean curtain — long for female, short for male
+    // Straight
     const hLen = female ? 328 : 252;
-    const lx = 80, rx = 220;
     const d = `
-      M ${lx},${hLen}
-      L ${lx},90
+      M 80,${hLen}
+      L 80,90
       Q 116,62 150,68
-      Q 184,62 ${rx},90
-      L ${rx},${hLen}
+      Q 184,62 220,90
+      L 220,${hLen}
       Q 185,${hLen+12} 150,${hLen+9}
-      Q 115,${hLen+12} ${lx},${hLen}
+      Q 115,${hLen+12} 80,${hLen}
       Z`;
     return `<path d="${d}" fill="${hc}"/>`;
   }
+}
+
+// Hair front overlay — drawn AFTER face to cover upper forehead
+function drawHairFront(p) {
+  // Curly: the top circles already extend over the forehead — no overlay needed
+  if (p.hairType === 'curly') return '';
+
+  const hc = p.hairHex;
+  const hairlineBot = FACE_TOP + 20;   // ~114
+
+  // Wavy/straight: shallow natural hairline arch
+  const d = `
+    M ${CX-58},${FACE_TOP+2}
+    Q ${CX},${FACE_TOP-4} ${CX+58},${FACE_TOP+2}
+    Q ${CX+48},${hairlineBot} ${CX+28},${hairlineBot-2}
+    Q ${CX},${hairlineBot+3} ${CX-28},${hairlineBot-2}
+    Q ${CX-48},${hairlineBot} ${CX-58},${FACE_TOP+2}
+    Z`;
+  return `<path d="${d}" fill="${hc}"/>`;
 }
 
 // ─── WIDOW'S PEAK ───────────────────────────────
 function drawWidowsPeak(p) {
   if (!p.widowsPeak) return '';
   const hc = p.hairHex;
-  // Small triangular dip of hair at center forehead
-  return `<path d="M ${CX-20},${FACE_TOP+8} Q ${CX},${FACE_TOP+26} ${CX+20},${FACE_TOP+8} Q ${CX},${FACE_TOP+12} ${CX},${FACE_TOP+12} Z" fill="${hc}"/>`;
+  // Shape starts ABOVE FACE_TOP (inside the hair, same color = invisible there)
+  // and narrows to a sharp point on the forehead.
+  // Only the tip below FACE_TOP is visible as the widow's peak dip.
+  return `<path d="
+    M ${CX-26},${FACE_TOP-12}
+    Q ${CX},${FACE_TOP-18} ${CX+26},${FACE_TOP-12}
+    Q ${CX+10},${FACE_TOP+8} ${CX},${FACE_TOP+28}
+    Q ${CX-10},${FACE_TOP+8} ${CX-26},${FACE_TOP-12}
+    Z" fill="${hc}"/>`;
 }
 
 // ─── FACE SHAPE ─────────────────────────────────
@@ -560,12 +625,50 @@ function drawNeck(p) {
   const sk = p.skinHex;
   const male = p.sex === 'male';
   const nt = FACE_BOT - 8;
-  const nw = male ? 28 : 18;          // half-width of neck
-  const sw = male ? 76 : 62;          // half-width of shoulders
-  return `
-    <rect x="${CX-nw}" y="${nt}" width="${nw*2}" height="55" fill="${sk}" rx="${male?3:5}"/>
-    <ellipse cx="${CX}" cy="${nt+55}" rx="${sw}" ry="${male?22:18}" fill="${darken(sk,12)}"/>
-  `;
+  const nw = male ? 28 : 18;
+  return `<rect x="${CX-nw}" y="${nt}" width="${nw*2}" height="55" fill="${sk}" rx="${male?3:5}"/>`;
+}
+
+// ─── SHIRT ──────────────────────────────────────
+function drawShirt(p) {
+  const male = p.sex === 'male';
+  const sc   = male ? '#7eb8e0' : '#f9afc8';   // shirt color
+  const dc   = male ? '#4a7fa8' : '#c87098';   // darker accent
+  const nw   = male ? 28 : 18;                 // neck half-width (matches drawNeck)
+  const hw   = male ? 90 : 80;                 // shirt half-width at edge
+  const shY  = FACE_BOT + 47;                  // top of shirt = bottom of neck rect = 307
+
+  if (male) {
+    // Crew-neck shirt
+    return `
+      <path d="
+        M ${CX-hw},360
+        L ${CX-hw},${shY-6}
+        Q ${CX-56},${shY-20} ${CX-nw-6},${shY-14}
+        L ${CX-nw},${shY}
+        Q ${CX},${shY+10} ${CX+nw},${shY}
+        L ${CX+nw+6},${shY-14}
+        Q ${CX+56},${shY-20} ${CX+hw},${shY-6}
+        L ${CX+hw},360 Z
+      " fill="${sc}"/>
+      <path d="M ${CX-nw},${shY} Q ${CX},${shY+12} ${CX+nw},${shY}"
+        fill="none" stroke="${dc}" stroke-width="1.8" opacity=".55"/>`;
+  } else {
+    // V-neck shirt
+    return `
+      <path d="
+        M ${CX-hw},360
+        L ${CX-hw},${shY-6}
+        Q ${CX-56},${shY-20} ${CX-nw-6},${shY-14}
+        L ${CX-14},${shY-2}
+        Q ${CX},${shY+26} ${CX+14},${shY-2}
+        L ${CX+nw+6},${shY-14}
+        Q ${CX+56},${shY-20} ${CX+hw},${shY-6}
+        L ${CX+hw},360 Z
+      " fill="${sc}"/>
+      <path d="M ${CX-14},${shY-2} Q ${CX},${shY+26} ${CX+14},${shY-2}"
+        fill="none" stroke="${dc}" stroke-width="1.8" opacity=".6"/>`;
+  }
 }
 
 // ─── EARS ────────────────────────────────────────
@@ -598,7 +701,7 @@ function drawBrows(p) {
   const gap = p.eyeDist==='close'?22: p.eyeDist==='far'?38:30;
   const lx=CX-gap, rx=CX+gap;
   const browY = EYE_Y - 14;
-  const eyeRx = p.eyeSize==='large'?13: p.eyeSize==='small'?8:11;
+  const eyeRx = p.eyeSize==='large'?15: p.eyeSize==='small'?10:12;
   const bw = eyeRx + 5;
   const thick = p.bushyBrow ? 5 : 2.5;
   const bc = p.browHex;
@@ -625,13 +728,20 @@ function drawEyes(p) {
   const gap = p.eyeDist==='close'?22: p.eyeDist==='far'?38:30;
   const lx=CX-gap, rx=CX+gap;
   const ey = EYE_Y;
-  const erx = p.eyeSize==='large'?13: p.eyeSize==='small'?8:11;
-  const ery = p.eyeSize==='large'?8.5: p.eyeSize==='small'?5:7;
   const ec = p.eyeHex;
-  const sk = p.skinHex;
-  const slantOff = p.eyeUpward ? 4 : 0; // outer corner Y offset (up)
+  const slantOff = p.eyeUpward ? 4 : 0;
 
-  let s='';
+  // Socket sizes — each must be comfortably larger than the iris
+  // erx = half-width, ery = half-height of eye socket
+  const erx = p.eyeSize==='large'?15 : p.eyeSize==='small'?10 : 12;
+  const ery = p.eyeSize==='large'?10 : p.eyeSize==='small'? 6 :  8;
+
+  // Iris radius: always smaller than ery so white sclera is visible
+  const irisR = ery * 0.62;
+
+  // Also update brow width to match socket size (keep in sync)
+  let s = '';
+
   for (const [ex, isLeft] of [[lx,true],[rx,false]]) {
     const outerX = isLeft ? ex-erx : ex+erx;
     const innerX = isLeft ? ex+erx : ex-erx;
@@ -640,27 +750,30 @@ function drawEyes(p) {
     const topY   = ey - ery;
     const botY   = ey + ery;
 
-    // Eye white path
+    // Eye socket path (almond vs round)
     let eyePath;
     if (p.almondEye) {
       eyePath = `M ${outerX},${outerY} Q ${ex},${topY} ${innerX},${innerY} Q ${ex},${botY} ${outerX},${outerY} Z`;
     } else {
-      // Rounder eye: use arcs that are fuller
       eyePath = `M ${outerX},${outerY} Q ${ex},${topY-2} ${innerX},${innerY} Q ${ex},${botY+2} ${outerX},${outerY} Z`;
     }
 
-    // White
+    // Unique clip ID for this eye
+    const clipId = isLeft ? 'ec-l' : 'ec-r';
+
+    // Define clip path
+    s += `<defs><clipPath id="${clipId}"><path d="${eyePath}"/></clipPath></defs>`;
+
+    // Eye white
     s += `<path d="${eyePath}" fill="white" stroke="#444" stroke-width="1.5"/>`;
 
-    // Iris (circle clipped to eye area)
-    const irisR = ery * 0.82;
-    s += `<circle cx="${ex}" cy="${ey}" r="${irisR}" fill="${ec}"/>`;
-    // Iris ring detail
-    s += `<circle cx="${ex}" cy="${ey}" r="${irisR}" fill="none" stroke="${darken(ec,30)}" stroke-width=".8"/>`;
+    // Iris — clipped to socket so it never overflows
+    s += `<circle cx="${ex}" cy="${ey}" r="${irisR}" fill="${ec}" clip-path="url(#${clipId})"/>`;
+    s += `<circle cx="${ex}" cy="${ey}" r="${irisR}" fill="none" stroke="${darken(ec,30)}" stroke-width=".8" clip-path="url(#${clipId})"/>`;
     // Pupil
-    s += `<circle cx="${ex}" cy="${ey}" r="${irisR*0.5}" fill="#111"/>`;
+    s += `<circle cx="${ex}" cy="${ey}" r="${irisR*0.5}" fill="#111" clip-path="url(#${clipId})"/>`;
     // Highlight
-    s += `<circle cx="${ex - irisR*0.32}" cy="${ey - irisR*0.32}" r="${irisR*0.22}" fill="white" opacity=".85"/>`;
+    s += `<circle cx="${ex - irisR*0.3}" cy="${ey - irisR*0.3}" r="${irisR*0.22}" fill="white" opacity=".85" clip-path="url(#${clipId})"/>`;
 
     // Re-draw eye outline on top of iris
     s += `<path d="${eyePath}" fill="none" stroke="#333" stroke-width="1.5"/>`;
@@ -768,29 +881,38 @@ function drawCleft(p) {
 
 // ─── ARM & HAND ──────────────────────────────────
 function drawArm(p) {
-  const sk = p.skinHex;
+  const sk    = p.skinHex;
   const shade = darken(sk, 28);
   const right = p.rightHanded;
   const male  = p.sex === 'male';
+  const sc    = male ? '#7eb8e0' : '#f9afc8';   // shirt color matches drawShirt
 
-  // Shoulder anchor — outer edge of shoulder hump
-  const sx = right ? CX + (male ? 68 : 55) : CX - (male ? 68 : 55);
-  const sy = FACE_BOT + 44;     // ~304
+  // Shoulder anchor — outer edge of shoulder area
+  const sx = right ? CX + (male ? 70 : 58) : CX - (male ? 70 : 58);
+  const sy = FACE_BOT + 42;     // ~302
 
   // Hand center — raised to about eye-level, beside the head
   const hx = right ? 256 : 44;
-  const hy = EYE_Y - 2;         // ~157
+  const hy = EYE_Y - 2;
 
-  // Elbow control point (bulges outward to give natural arm curve)
+  // Elbow control point
   const cx1 = right ? 275 : 25;
-  const cy1 = CY + 28;          // ~205
+  const cy1 = CY + 28;
 
   const armD = `M ${sx},${sy} Q ${cx1},${cy1} ${hx},${hy}`;
 
+  // Short sleeve: a shirt-colored stub at the shoulder start
+  const sleeveLen = 22;
+  const slx = right ? sx + 14 : sx - 14;
+  const sly = sy + sleeveLen;
+
   return [
-    // Soft shadow behind arm
-    `<path d="${armD}" fill="none" stroke="${shade}" stroke-width="22" stroke-linecap="round" opacity=".28"/>`,
-    // Arm tube
+    // Sleeve stub (shirt color)
+    `<path d="M ${sx},${sy} Q ${right?sx+8:sx-8},${sly} ${right?sx+4:sx-4},${sly+6}"
+      fill="none" stroke="${sc}" stroke-width="20" stroke-linecap="round"/>`,
+    // Shadow
+    `<path d="${armD}" fill="none" stroke="${shade}" stroke-width="22" stroke-linecap="round" opacity=".25"/>`,
+    // Arm (skin)
     `<path d="${armD}" fill="none" stroke="${sk}" stroke-width="17" stroke-linecap="round"/>`,
     // Hand
     drawHand(hx, hy, right, sk, shade),
@@ -834,14 +956,18 @@ function generateSVG(p) {
   const layers = [
     // Background
     `<rect width="300" height="360" fill="#f0f6f4" rx="10"/>`,
-    // Neck first (behind everything)
-    drawNeck(p),
-    // Hair behind face
+    // Hair first — drawn behind everything so it drops behind neck/shirt
     drawHair(p),
+    // Neck (skin, on top of hair)
+    drawNeck(p),
+    // Shirt (covers shoulder area, sits below neck)
+    drawShirt(p),
     // Ears (behind face edges)
     drawEars(p),
     // Face shape (covers inner ears)
     drawFaceShape(p),
+    // Hair front — overlays upper forehead
+    drawHairFront(p),
     // Eyebrows
     drawBrows(p),
     // Eyes
@@ -993,13 +1119,67 @@ function copyPrompt() {
 }
 
 // ═══════════════════════════════════════════════
+//  RANDOMIZE
+// ═══════════════════════════════════════════════
+function randomize() {
+  // For each trait, randomly produce AA, Aa (or aA), or aa
+  // Weight: 25% AA, 50% Aa, 25% aa (Hardy-Weinberg-ish)
+  function randGeno(letter) {
+    const r = Math.random();
+    const L = letter.toUpperCase(), l = letter.toLowerCase();
+    if (r < 0.25) return L + L;
+    if (r < 0.75) return Math.random() < 0.5 ? L + l : l + L;
+    return l + l;
+  }
+  const seq = TRAITS.map(t => randGeno(t.id)).join(' ');
+  document.getElementById('seq-input').value = seq;
+
+  // Randomize polygenic inputs too
+  ['pA','pB','pC'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = randGeno('a');
+  });
+  ['pD','pE','pF','pG'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = randGeno('a');
+  });
+
+  updateFace();
+}
+
+// ═══════════════════════════════════════════════
+//  UPDATE TRAIT TABLE
+// ═══════════════════════════════════════════════
+function updateTraitTable() {
+  const g = parseSequence();
+  TRAITS.forEach(t => {
+    const val = g[t.id];
+    const genoEl  = document.getElementById(`tg_${t.id}`);
+    const phenoEl = document.getElementById(`tp_${t.id}`);
+    const rowEl   = document.getElementById(`row_${t.id}`);
+    if (!genoEl) return;
+    if (val && val.length === 2) {
+      genoEl.textContent = val;
+      genoEl.classList.remove('t-empty');
+      phenoEl.textContent = t.label(val);
+      rowEl.classList.add('t-live');
+    } else {
+      genoEl.textContent = val || '—';
+      genoEl.classList.add('t-empty');
+      phenoEl.textContent = val ? '' : t.label(''); // default
+      rowEl.classList.remove('t-live');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
 //  UPDATE FACE
 // ═══════════════════════════════════════════════
 function updateFace() {
   const p = parsePhenotypes();
-  const faceEl = document.getElementById('face-svg');
-  faceEl.innerHTML = generateSVG(p);
+  document.getElementById('face-svg').innerHTML = generateSVG(p);
   document.getElementById('pheno-list').innerHTML = buildPhenoList(p);
+  updateTraitTable();
 }
 
 // ═══════════════════════════════════════════════
